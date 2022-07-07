@@ -1,3 +1,10 @@
+import random
+
+
+# Can't reinitialize game after losing all lives 
+# Can't handle inputs that arent A,B,C,D 
+
+
 # define rooms
 
 game_room = {
@@ -143,6 +150,20 @@ object_relations = {
 }
 
 
+# Questions dict and variables
+
+
+question = {"Which character was first played by Arnold Schwarzenegger in a 1984 film?":
+            {"A": "A: The Demonstrator", "B": "B: The Instigator", "C": "C: The Investigator", "D": "D: The Terminator", "correct": "D"}, 
+            'what name is given to the person who traditionally attends the groom on his wedding day?': {"A": "A: Best man", "B": "B: Top man", "C": "Old man", "D": "Poor man", "correct": "A"}, 
+           "California has alomost the same population as...": {"A": "A: The United Kingdom", "B": "B: Spain", "C": "C: Italy", "D": "D: Poland", "correct": "D"},"Which is a chain of international hotels?": {"A": "A: Four Tops","B":"B: Four Pennies","C": "C: Four Seasons","D":"D:Four Posters","correct": "C"} }
+
+
+question_presented = 0
+options = 0
+correct_answer = 0 
+
+
 # define game state. Do not directly change this dict. 
 # Instead, when a new game starts, make a copy of this
 # dict and use the copy to store gameplay state. This 
@@ -151,7 +172,8 @@ object_relations = {
 INIT_GAME_STATE = {
     "current_room": game_room,
     "keys_collected": [],
-    "target_room": outside
+    "target_room": outside,
+    "lives": 5
 }
 
 # define variable game_state
@@ -239,8 +261,8 @@ def examine_item(item_name):
                     if(key["target"] == item):
                         have_key = True
                 if(have_key):
-                    output += "You unlock it with a key you have."
-                    next_room = get_next_room_of_door(item, current_room)
+                    give_question = randomize_question()
+                    next_room = get_next_room_of_door(item, current_room) 
                 else:
                     output += "It is locked but you don't have the key."
             else:
@@ -262,6 +284,43 @@ def examine_item(item_name):
     else:
         play_room(current_room)
 
+def answer_question ():
+    
+    if game_state['lives'] == 0:
+        print("You are out of lives! Game over ;)")
+        
+        
+    print("You have the key! But don't get ahead of yourself, you have to answer a little question first!")
+        
+    a = input(question_presented + "\n" + options[0] + " " + options[1] + " " + options[2] + " " + options[3] + " answer A, B, C or D")
+
+    if a == correct_answer:
+        print("That's correct, the door has unlocked!")       
+    
+    elif a != correct_answer:
+        game_state['lives'] -= 1
+        print("Wrong! Try again!")
+        print("you have " + str(game_state["lives"]) + "lives left!")
+        randomize_question()
+    
+    else: 
+        print("wrong answer, type A, B, C or D")
+        answer_question()
+
+        
+def randomize_question():
+    
+    global question_presented 
+    global options
+    global correct_answer
+    
+
+
+    question_presented = random.choice(list(question.keys()))
+    options = [i for i in question[question_presented].values()][:-1]
+    correct_answer = question[question_presented]['correct']
+   
+    input_question = answer_question() 
 
 
 game_state = INIT_GAME_STATE.copy()
