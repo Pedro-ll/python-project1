@@ -1,5 +1,7 @@
 import random
-
+import time
+from multiprocessing import Process
+import sys
 
 # Can't reinitialize game after losing all lives 
 # Can't handle inputs that arent A,B,C,D 
@@ -161,7 +163,65 @@ object_relations = {
     "living room":[door_c,dining_table,door_d],
     "door d":[living_room,outside]
 }
+# Question for each key
+def QA1():
 
+    answer1=interface_1("Please enter a or b or c:", "Which country does not have the same name of its capital? \n a) Finland  b) Monaco  c) Kuwait \n Please enter a or b or c:").lower()
+
+    if answer1 == "a":
+        interface_2("CONGRATULATION, you won the key")
+    elif answer1=="b":
+        interface_2("Try Agian")
+        return QA1()
+    elif answer1=="C":
+        interface_2("Try Agian")
+        return QA1()
+    else:
+        interface_2("Your answer should be a or b or c")
+        return QA1()
+def QA2():
+    answer2=interface_1("Please enter a or b or c:", "What is the capital of Lebanon? \n a) Beirut  b) Jbeil  c) Tripoly \n Please enter a or b or c:").lower()
+
+    if answer2 == "a":
+        interface_2("CONGRATULATION, you won the key")
+    elif answer2=="b":
+        interface_2("Try Agian")
+        return QA2()
+    elif answer2=="C":
+        interface_2("Try Agian")
+        return QA2()
+    else:
+        interface_2("Your answer should be a or b or c")
+        return QA2()
+def QA3():
+    answer3=interface_1("Please enter a or b or c:", "Luanda is the capita of which country ? \n a) Angola  b) Panama  c) Singapore \n Please enter a or b or c:").lower()
+
+    if answer3 == "a":
+        interface_2("CONGRATULATION, you won the key")
+    elif answer3=="b":
+        interface_2("Try Agian")
+        return QA3()
+    elif answer3=="C":
+        interface_2("Try Agian")
+        return QA3()
+    else:
+        interface_2("Your answer should be a or b or c")
+        return QA3()
+    
+def QA4():
+    answer4=interface_1("Please enter a or b or c:", "What is the largest city in portugal by population ? \n a) Lisbon  b) Braga  c) Tripoly \n Please enter a or b or c:").lower()
+
+    if answer4 == "a":
+        interface_2("CONGRATULATION, you won the key")
+    elif answer4=="b":
+        interface_2("Try Agian")
+        return QA4()
+    elif answer4=="C":
+        interface_2("Try Agian")
+        return QA4()
+    else:
+        interface_2("Your answer should be a or b or c")
+        return QA4()
 
 # Questions dict and variables
 
@@ -291,6 +351,14 @@ def examine_item(item_name):
                     output += "It is locked but you don't have the key."
             else:
                 if(item["name"] in object_relations and len(object_relations[item["name"]])>0):
+                    if item["name"]=="piano":
+                        QA1()
+                    elif item["name"]=="queen bed":
+                        QA2()
+                    elif item["name"]=="dresser":
+                        QA3()
+                    else:
+                        QA4()
                     item_found = object_relations[item["name"]].pop()
                     game_state["keys_collected"].append(item_found)
                     interface_2("You find " + item_found["name"] + "."+"Press OK")
@@ -320,7 +388,8 @@ def answer_question ():
         a = interface_1(question_presented + "\n" + options[0] + " " + options[1] + " " + options[2] + " " + options[3] + " answer A, B, C or D",question_presented + "\n" + options[0] + " " + options[1] + " " + options[2] + " " + options[3] + " answer A, B, C or D")
 
         if a == correct_answer:
-            interface_2("That's correct, the door has unlocked!")       
+            interface_2("That's correct, the door has unlocked!")
+            break     
         
         elif a != correct_answer:
             game_state['lives'] -= 1
@@ -333,7 +402,10 @@ def answer_question ():
         else: 
             interface_2("wrong answer, type A, B, C or D")
             answer_question()
-    return interface_2('You have lost the game!!!! Better luck next time') 
+    if game_state['lives'] == 0:
+        interface_2('You have lost the game!!!! Better luck next time') 
+        sys.exit()
+        
         
 def randomize_question():
     
@@ -349,12 +421,33 @@ def randomize_question():
    
     input_question = answer_question() 
 
+def countdown(t):
+    while t:
+        mins, secs = divmod(t, 60)
+        timeformat = '{:02d}:{:02d}'.format(mins, secs)
+        time.sleep(1)
+        t -= 1
+    print("The bomb goes off!! GAME OVER!!")
+
 
 game_state = INIT_GAME_STATE.copy()
 
 
-while game_state['lives']>0:
-    start_game()
+if __name__ == '__main__':
+    p1 = Process(target=countdown, args=(300,))
+    p2 = Process(target=start_game)
+
+    p1.start()
+    p2.start()
+
+
+    p1.join()
+    if p1.is_alive() == False:
+        p2.terminate()
+
+
+# while game_state['lives']>0:
+#     start_game()
 
 
 
