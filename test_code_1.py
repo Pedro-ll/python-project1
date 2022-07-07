@@ -129,8 +129,8 @@ dining_table = {
 
 from optparse import Values
 import PySimpleGUI as sg
-def interface_1(a):
-    event, values = sg.Window(a, [[sg.Text('Interface')], [sg.Input()], [sg.OK(), sg.Cancel()] ], size=(600,110)).read(close=True)
+def interface_1(a,b):
+    event, values = sg.Window(a, [[sg.Text('Interface')],[sg.Text(b)], [sg.Input()], [sg.OK(), sg.Cancel()] ], size=(600,110)).read(close=True)
     print(values[0])
     return values[0]
 
@@ -221,14 +221,14 @@ def play_room(room):
     else:
         interface_2("You are now in " + room["name"] +"\n Press OK")
         #print("You are now in " + room["name"])
-        intended_action =interface_1("What would you like to do? Type 'explore' or 'examine'?").strip()
+        intended_action =interface_1("What would you like to do? Type 'explore' or 'examine'?","What would you like to do? Type 'explore' or 'examine'?").strip()
         #intended_action = input("What would you like to do? Type 'explore' or 'examine'?").strip()
         linebreak()
         if intended_action == "explore":
             explore_room(room)
             play_room(room)
         elif intended_action == "examine":
-            examine_item(interface_1("What would you like to examine?").strip())
+            examine_item(interface_1("What would you like to examine?","What would you like to examine?").strip())
             #examine_item(input("What would you like to examine?").strip())
             linebreak()
         else:
@@ -282,14 +282,10 @@ def examine_item(item_name):
                     if(key["target"] == item):
                         have_key = True
                 if(have_key):
-<<<<<<< HEAD:test_code_1.py
-                    give_question = randomize_question()
-                    next_room = get_next_room_of_door(item, current_room) 
-=======
+                    give_question = randomize_question() 
                     interface_2("You unlock it with a key you have. \n Press ok")
                     output += "You unlock it with a key you have."
                     next_room = get_next_room_of_door(item, current_room)
->>>>>>> 19fc5b40cd0acd056874a108b07002c1696dd1ff:test_code_1.py
                 else:
                     interface_2("It is locked but you don't have the key. \n Press ok")
                     output += "It is locked but you don't have the key."
@@ -310,34 +306,34 @@ def examine_item(item_name):
         #print("The item you requested is not found in the current room.")
         linebreak()
     
-    if(next_room and interface_1("Do you want to go to " + next_room['name'] + "? Enter 'yes' or 'no'").strip() == 'yes'):
+    if(next_room and interface_1("Do you want to go to " + next_room['name'] + "? Enter 'yes' or 'no'","Do you want to go to " + next_room['name'] + "? Enter 'yes' or 'no'").strip() == 'yes'):
         play_room(next_room)
     else:
         play_room(current_room)
 
 def answer_question ():
     
-    if game_state['lives'] == 0:
-        print("You are out of lives! Game over ;)")
+    while game_state['lives']> 0:
         
-        
-    print("You have the key! But don't get ahead of yourself, you have to answer a little question first!")
-        
-    a = input(question_presented + "\n" + options[0] + " " + options[1] + " " + options[2] + " " + options[3] + " answer A, B, C or D")
+        interface_2("You have the key! But don't get ahead of yourself, you have to answer a little question first!")
+            
+        a = interface_1(question_presented + "\n" + options[0] + " " + options[1] + " " + options[2] + " " + options[3] + " answer A, B, C or D",question_presented + "\n" + options[0] + " " + options[1] + " " + options[2] + " " + options[3] + " answer A, B, C or D")
 
-    if a == correct_answer:
-        print("That's correct, the door has unlocked!")       
-    
-    elif a != correct_answer:
-        game_state['lives'] -= 1
-        print("Wrong! Try again!")
-        print("you have " + str(game_state["lives"]) + "lives left!")
-        randomize_question()
-    
-    else: 
-        print("wrong answer, type A, B, C or D")
-        answer_question()
+        if a == correct_answer:
+            interface_2("That's correct, the door has unlocked!")       
+        
+        elif a != correct_answer:
+            game_state['lives'] -= 1
+            interface_2("Wrong! Try again!")
+            interface_2("you have " + str(game_state["lives"]) + " lives left!")
+            randomize_question()
 
+    
+        
+        else: 
+            interface_2("wrong answer, type A, B, C or D")
+            answer_question()
+    return interface_2('You have lost the game!!!! Better luck next time') 
         
 def randomize_question():
     
@@ -356,7 +352,10 @@ def randomize_question():
 
 game_state = INIT_GAME_STATE.copy()
 
-start_game()
+
+while game_state['lives']>0:
+    start_game()
+
 
 
 
