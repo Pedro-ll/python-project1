@@ -127,6 +127,19 @@ dining_table = {
 
 
 
+from optparse import Values
+import PySimpleGUI as sg
+def interface_1(a):
+    event, values = sg.Window(a, [[sg.Text('Interface')], [sg.Input()], [sg.OK(), sg.Cancel()] ], size=(600,110)).read(close=True)
+    print(values[0])
+    return values[0]
+
+
+
+def interface_2(a):
+    event, values = sg.Window('Interface', [[sg.Text(a)], [sg.Input()], [sg.OK(), sg.Cancel()] ],size=(600,110) ).read(close=True)
+    return 
+
 
 all_rooms = [game_room,bedroom_1,bedroom_2,living_room, outside]
 
@@ -191,7 +204,8 @@ def start_game():
     """
     Start the game
     """
-    print("You wake up on a couch and find yourself in a strange house with no windows which you have never been to before. You don't remember why you are here and what had happened before. You feel some unknown danger is approaching and you must get out of the house, NOW!")
+    interface_2("You wake up on a couch and find yourself in a strange house with no windows which you have never been to before. \n You don't remember why you are here and what had happened before. You feel some unknown danger is approaching \n and you must get out of the house, NOW! \n Press Ok")
+    #print("You wake up on a couch and find yourself in a strange house with no windows which you have never been to before. You don't remember why you are here and what had happened before. You feel some unknown danger is approaching and you must get out of the house, NOW!")
     play_room(game_state["current_room"])
 
 def play_room(room):
@@ -202,19 +216,24 @@ def play_room(room):
     """
     game_state["current_room"] = room
     if(game_state["current_room"] == game_state["target_room"]):
-        print("Congrats! You escaped the room!")
+        interface_2("Congrats! You escaped the room!")
+        #print("Congrats! You escaped the room!")
     else:
-        print("You are now in " + room["name"])
-        intended_action = input("What would you like to do? Type 'explore' or 'examine'?").strip()
+        interface_2("You are now in " + room["name"] +"\n Press OK")
+        #print("You are now in " + room["name"])
+        intended_action =interface_1("What would you like to do? Type 'explore' or 'examine'?").strip()
+        #intended_action = input("What would you like to do? Type 'explore' or 'examine'?").strip()
         linebreak()
         if intended_action == "explore":
             explore_room(room)
             play_room(room)
         elif intended_action == "examine":
-            examine_item(input("What would you like to examine?").strip())
+            examine_item(interface_1("What would you like to examine?").strip())
+            #examine_item(input("What would you like to examine?").strip())
             linebreak()
         else:
-            print("Not sure what you mean. Type 'explore' or 'examine'.")
+            interface_2("Not sure what you mean. Type 'explore' or 'examine'. \n Press OK")
+            # print("Not sure what you mean. Type 'explore' or 'examine'.")
             linebreak()
             play_room(room)
         linebreak()
@@ -224,7 +243,8 @@ def explore_room(room):
     Explore a room. List all items belonging to this room.
     """
     items = [i["name"] for i in object_relations[room["name"]]]
-    print("You explore the room. This is " + room["name"] + ". You find " + ", ".join(items))
+    interface_2("You explore the room. This is " + room["name"] + ". You find " + ", ".join(items)+"\n Press OK")
+    #print("You explore the room. This is " + room["name"] + ". You find " + ", ".join(items))
     linebreak()
 
 def get_next_room_of_door(door, current_room):
@@ -254,6 +274,7 @@ def examine_item(item_name):
     
     for item in object_relations[current_room["name"]]:
         if(item["name"] == item_name):
+            interface_2("You examine " + item_name + ". \n Press ok")
             output = "You examine " + item_name + ". "
             if(item["type"] == "door"):
                 have_key = False
@@ -261,25 +282,35 @@ def examine_item(item_name):
                     if(key["target"] == item):
                         have_key = True
                 if(have_key):
+<<<<<<< HEAD:test_code_1.py
                     give_question = randomize_question()
                     next_room = get_next_room_of_door(item, current_room) 
+=======
+                    interface_2("You unlock it with a key you have. \n Press ok")
+                    output += "You unlock it with a key you have."
+                    next_room = get_next_room_of_door(item, current_room)
+>>>>>>> 19fc5b40cd0acd056874a108b07002c1696dd1ff:test_code_1.py
                 else:
+                    interface_2("It is locked but you don't have the key. \n Press ok")
                     output += "It is locked but you don't have the key."
             else:
                 if(item["name"] in object_relations and len(object_relations[item["name"]])>0):
                     item_found = object_relations[item["name"]].pop()
                     game_state["keys_collected"].append(item_found)
+                    interface_2("You find " + item_found["name"] + "."+"Press OK")
                     output += "You find " + item_found["name"] + "."
                 else:
+                    interface_2("There isn't anything interesting about it.")
                     output += "There isn't anything interesting about it."
             print(output)
             break
 
     if(output is None):
-        print("The item you requested is not found in the current room.")
+        interface_2("The item you requested is not found in the current room. \n Press Ok")
+        #print("The item you requested is not found in the current room.")
         linebreak()
     
-    if(next_room and input("Do you want to go to " + next_room['name'] + "? Enter 'yes' or 'no'").strip() == 'yes'):
+    if(next_room and interface_1("Do you want to go to " + next_room['name'] + "? Enter 'yes' or 'no'").strip() == 'yes'):
         play_room(next_room)
     else:
         play_room(current_room)
@@ -326,3 +357,6 @@ def randomize_question():
 game_state = INIT_GAME_STATE.copy()
 
 start_game()
+
+
+
